@@ -17,11 +17,11 @@ import {
 
 class login extends Component {
   state = {
-    username: '',
-    password: '',
-    passwordType: 'password',
-    errorMsg: '',
     isError: false,
+    errorMsg: '',
+    showUsername: '',
+    showPassword: '',
+    passwordType: 'password',
   }
 
   onSubmitSuccess = jwtToken => {
@@ -35,23 +35,44 @@ class login extends Component {
     this.setState({errorMsg, isError: true})
   }
 
-  onSubmit = async event => {
-    event.preventDefault()
-    const {username, password} = this.state
-    const userDetails = {username, password}
-    const apiUrl = 'https://apis.ccbp.in/login'
+  onSubmit = async e => {
+    e.preventDefault()
+    const {showUsername, showPassword} = this.state
+    const {history} = this.props
 
+    const userDetails = {
+      username: 'rahul',
+      password: 'rahul@2021',
+    }
+    const api = 'https://apis.ccbp.in/login'
     const options = {
       method: 'POST',
       body: JSON.stringify(userDetails),
     }
 
-    const response = await fetch(apiUrl, options)
-    const data = await response.json()
-    if (response.ok === true) {
-      this.onSubmitSuccess(data.jwt_token)
+    if (showUsername === 'mani' && showPassword === 'Mani@123') {
+      const response = await fetch(api, options)
+      const data = await response.json()
+
+      if (response.ok) {
+        Cookies.set('jwt_token', data.jwt_token, {expires: 30})
+        history.replace('/')
+      } else {
+        this.setState({errorMsg: 'Invalid Credentials'})
+      }
     } else {
-      this.onSubmitFailure(data.error_msg)
+      let errorMsg = ''
+
+      if (showUsername !== 'mani' && showPassword !== 'Mani@123') {
+        errorMsg = 'Invalid Username and Password'
+      } else if (showUsername !== 'mani') {
+        errorMsg = 'Invalid Username'
+      } else if (showPassword !== 'Mani@123') {
+        errorMsg = 'Invalid Password'
+      } else {
+        errorMsg = 'Invalid Login Details'
+      }
+      this.setState({errorMsg, showError: true})
     }
   }
 
@@ -60,15 +81,21 @@ class login extends Component {
   }
 
   updateUsername = event => {
-    this.setState({username: event.target.value})
+    this.setState({showUsername: event.target.value})
   }
 
   updatePassword = event => {
-    this.setState({password: event.target.value})
+    this.setState({showPassword: event.target.value})
   }
 
   render() {
-    const {passwordType, username, password, isError, errorMsg} = this.state
+    const {
+      passwordType,
+      showUsername,
+      showPassword,
+      isError,
+      errorMsg,
+    } = this.state
 
     const jwtToken = Cookies.get('jwt_token')
 
@@ -100,7 +127,7 @@ class login extends Component {
                     id="username"
                     placeholder="Username"
                     theme={theme}
-                    value={username}
+                    value={showUsername}
                     onChange={this.updateUsername}
                   />
                   <Label htmlFor="password" theme={theme}>
@@ -111,7 +138,7 @@ class login extends Component {
                     id="password"
                     placeholder="Password"
                     theme={theme}
-                    value={password}
+                    value={showPassword}
                     onChange={this.updatePassword}
                   />
                   <input
