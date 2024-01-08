@@ -1,6 +1,7 @@
 import {Component} from 'react'
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
+import './index.css'
 
 import ThemeContext from '../../Context/ThemeContext'
 import {
@@ -50,30 +51,40 @@ class login extends Component {
       body: JSON.stringify(userDetails),
     }
 
-    if (showUsername === 'mani' && showPassword === 'Mani@123') {
-      const response = await fetch(api, options)
-      const data = await response.json()
+    const response = await fetch(api, options)
+    const data = await response.json()
 
-      if (response.ok) {
-        Cookies.set('jwt_token', data.jwt_token, {expires: 30})
-        history.replace('/')
-      } else {
-        this.setState({errorMsg: 'Invalid Credentials'})
-      }
+    if (response.ok) {
+      Cookies.set('jwt_token', data.jwt_token, {expires: 30})
+      history.replace('/')
     } else {
-      let errorMsg = ''
-
-      if (showUsername !== 'mani' && showPassword !== 'Mani@123') {
-        errorMsg = 'Invalid Username and Password'
-      } else if (showUsername !== 'mani') {
-        errorMsg = 'Invalid Username'
-      } else if (showPassword !== 'Mani@123') {
-        errorMsg = 'Invalid Password'
-      } else {
-        errorMsg = 'Invalid Login Details'
-      }
-      this.setState({errorMsg, showError: true})
+      this.setState({errorMsg: 'Invalid Credentials'})
     }
+
+    // if (showUsername === 'mani' && showPassword === 'Mani@123') {
+    //   const response = await fetch(api, options)
+    //   const data = await response.json()
+
+    //   if (response.ok) {
+    //     Cookies.set('jwt_token', data.jwt_token, {expires: 30})
+    //     history.replace('/')
+    //   } else {
+    //     this.setState({errorMsg: 'Invalid Credentials'})
+    //   }
+    // } else {
+    //   let errorMsg = ''
+
+    //   if (showUsername !== 'mani' && showPassword !== 'Mani@123') {
+    //     errorMsg = 'Invalid Username and Password'
+    //   } else if (showUsername !== 'mani') {
+    //     errorMsg = 'Invalid Username'
+    //   } else if (showPassword !== 'Mani@123') {
+    //     errorMsg = 'Invalid Password'
+    //   } else {
+    //     errorMsg = 'Invalid Login Details'
+    //   }
+    //   this.setState({errorMsg, showError: true})
+    // }
   }
 
   onCheckBox = event => {
@@ -151,6 +162,9 @@ class login extends Component {
                   </ShowPasswordLabel>
                   <div>
                     <LoginButton type="sumbit">Login</LoginButton>
+                    <p className="log">
+                      Click on login to log without credentials
+                    </p>
                   </div>
                   <ErrorMsg>{isError && `* ${errorMsg}`}</ErrorMsg>
                 </Form>
